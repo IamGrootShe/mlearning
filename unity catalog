@@ -1,0 +1,28 @@
+An introduction to the Hive Metastore Catalog in Databricks, explaining concepts like managed tables, external tables, and views. 
+It highlights the differences between managed and external tables, particularly concerning data persistence after dropping a table.
+
+Here are the key takeaways:
+
+Hive Metastore Catalog:
+
+Before Unity Catalog, Hive Metastore was the default catalog in Databricks for storing structured data assets.
+It comes with a default schema. If no schema is specified during table creation, the table is created under the default schema.
+To use the Hive Metastore, a compute resource (like a serverless warehouse or cluster) is required.
+
+Managed Table:
+
+In a managed table, both metadata (schema) and data are managed by the Metastore.
+When a managed table is dropped, both the metadata and the data are permanently deleted.
+The default location for data stored in a managed table in Hive Metastore is DBFS (Databricks File System) within the managed resource group.
+Managed tables in Databricks are Delta tables by default.
+
+External Table:
+
+Unlike managed tables, for external tables, only the metadata is managed by the Metastore, while the data is stored at a user-defined external location.
+When an external table is dropped, only the metadata is removed, and the underlying data remains intact at its specified location. This allows for re-creation of the table using the existing data.
+
+Views:
+
+Views can be created in the Hive Metastore.
+They are permanent, meaning they persist even if the cluster is terminated and restarted.
+Views are essentially stored queries that retrieve data from underlying tables.
