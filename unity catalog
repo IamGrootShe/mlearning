@@ -26,3 +26,73 @@ Views:
 Views can be created in the Hive Metastore.
 They are permanent, meaning they persist even if the cluster is terminated and restarted.
 Views are essentially stored queries that retrieve data from underlying tables.
+
+----------------------------------------------------------------------------
+
+The process involves creating a Metastore, setting up an Azure Storage Account for the Metastore data, establishing Access Connectors for Databricks to access the storage, and finally assigning the Metastore to the Databricks Workspace to enable Unity Catalog.
+
+Here are the key steps covered:
+
+Setup Metastore for Databricks :
+
+The Metastore is the top-level container in Unity Catalog.
+It's recommended to create only one Metastore per region.
+An optional but good practice is to provide an ADLS Gen 2 path for storing managed table data .
+Create Azure Storage Account for Metastore :
+
+A storage account is needed to store the Metastore's data.
+The video demonstrates creating a storage account in Azure Portal (1:43-3:12), enabling hierarchical namespace for Data Lake Storage Gen2 endpoint .
+A root container and a "metastore" directory are created within the storage account to serve as the root for Metastore data .
+Access Connectors for Azure Databricks:
+
+An Access Connector for Azure Databricks is created to provide Databricks with identity to connect to the storage account .
+This connector is then assigned the "Storage Blob Data Contributor" role on the storage account to grant necessary permissions .
+Setup ADLS path for Metastore :
+
+The ADLS path to the storage account container and directory (e.g., root@.dfs.core.windows.net/metastore) is configured in the Metastore creation process .
+The Resource ID of the created access connector is also provided .
+Assign Metastore to Databricks Workspace :
+
+The newly created Metastore is then assigned to the Databricks Workspace .
+This action enables Unity Catalog for the workspace, allowing for catalog creation and management within Databricks .
+The user who configured the Metastore automatically becomes the Metastore Admin with privileges to work with catalogs .
+
+-----------------------------------------------
+
+ a detailed guide on creating catalogs with and without external locations in Databricks Unity Catalog, along with steps for creating storage credentials and external locations.
+
+Here are the key takeaways from the video:
+
+Understanding External Locations and Data Storage (0:42)
+
+Metastore Level: By default, managed table data is stored at the metastore location unless a more specific location is defined.
+Catalog Level: If an external location is specified at the catalog level, managed tables created under that catalog will store their data in that location.
+Schema Level: If a schema-level external location is defined, managed table data will be stored there, overriding catalog and metastore settings.
+Fallback Mechanism: If no location is defined at the schema level, it falls back to the catalog level. If no catalog location is defined, it falls back to the metastore level.
+Mandatory Catalog Location: If a metastore is created without a specified location, it becomes mandatory to specify a location at the catalog level when creating a catalog.
+Creating External Location (2:45)
+
+The video demonstrates creating a new container named "data" and a directory "ADB/catalog" within an existing Azure storage account to serve as the root for catalog data storage.
+Creating Catalogs without External Location (3:45)
+
+Catalogs can be created directly from the Databricks UI or using SQL commands.
+A catalog named "Dev" is created via the UI without specifying an external location .
+SQL is used to create another catalog named "Dev SQL" with a comment .
+To view catalog information, use DESCRIBE CATALOG EXTENDED.
+Dropping Catalogs 
+
+Attempting to DROP CATALOG directly will fail if the catalog is not empty due to default schemas.
+The CASCADE keyword (DROP CATALOG CASCADE) can be used to recursively drop all tables, schemas, and views within the catalog .
+Creating Storage Credentials
+
+Storage credentials act as a bridge between Databricks and external storage accounts.
+A new storage credential named "UC catalog storage" is created using Azure managed identity and the existing UC connector ID .
+Creating External Location in Databricks 
+
+An external location named "EXT catalog" is created in Databricks using SQL, pointing to the Azure storage path and associated with the newly created storage credential .
+Creating Catalog with External Location 
+
+A new catalog named "Dev EXT" is created using SQL, explicitly defining the MANAGED LOCATION to the previously created external location .
+Describing this catalog (DESCRIBE CATALOG EXTENDED Dev_EXT) shows the storage_root pointing to the specified external location .
+
+--------------------------------------------------
